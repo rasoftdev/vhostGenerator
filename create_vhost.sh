@@ -105,3 +105,7 @@ sudo ln -s /etc/nginx/sites-available/$name.local.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 
 echo "Vhost created and enabled successfully."
+
+# Print server IP and assigned vhost URL
+server_ip=$(hostname -I | awk '{print $1}')
+echo "$server_ip	$url"
