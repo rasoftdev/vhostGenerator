@@ -99,14 +99,14 @@ validate_and_edit_apache_conf() {
     if [ -f "$conf_file" ]; then
         echo "apache2.conf exists. Editing server_name..."
         if grep -q "server_name" "$conf_file"; then
-            sudo sed -i "/server_name/s/$/ $url/" "$conf_file"
+            sudo sed -i "s/server_name \(.*\);/server_name \1 $url;/" "$conf_file"
         else
             echo "server_name not found. Adding serve_name..."
-            echo "server_name $url" | sudo tee -a "$conf_file" > /dev/null
+            echo "server_name $url;" | sudo tee -a "$conf_file" > /dev/null
         fi
     else
         echo "apache2.conf does not exist. Creating and adding server_name..."
-        echo "server_name $url" | sudo tee "$conf_file" > /dev/null
+        echo "server_name $url;" | sudo tee "$conf_file" > /dev/null
         # Create the default vhost
         echo "Creating default vhost..."
         sudo tee /etc/nginx/sites-available/apache2.conf > /dev/null <<EOF
@@ -172,7 +172,7 @@ case $option in
 esac
 
 # Enable the new site and reload Nginx
-f [ "$option" -ne 4 ]; then
+if [ "$option" -ne 4 ]; then
     sudo ln -s /etc/nginx/sites-available/$name.local.conf /etc/nginx/sites-enabled/
 fi
 sudo systemctl reload apache2
